@@ -9,11 +9,30 @@ load_dotenv(dotenv_path=env_path)
 
 
 class Settings:
-    DATABASE_HOSTNAME: str = os.getenv("DATABASE_HOSTNAME", "localhost")
-    DATABASE_PORT: str = os.getenv("DATABASE_PORT", "5432")
-    DATABASE_NAME: str = os.getenv("DATABASE_NAME", "codesnippets")
-    DATABASE_USERNAME: str = os.getenv("DATABASE_USERNAME", "postgres")
-    DATABASE_PASSWORD: str = os.getenv("DATABASE_PASSWORD", "")
+    def __init__(self) -> None:
+        self.DATABASE_HOSTNAME = os.getenv("DATABASE_HOSTNAME", "localhost")
+        self.DATABASE_PORT = os.getenv("DATABASE_PORT","")
+        self.DATABASE_NAME = os.getenv("DATABASE_NAME","")
+        self.DATABASE_USERNAME = os.getenv("DATABASE_USERNAME","")
+        self.DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "")
+
+        self._validate()
+
+    def _validate(self) -> None:
+        required_fields = {
+            "DATABASE_HOSTNAME": self.DATABASE_HOSTNAME,
+            "DATABASE_PORT": self.DATABASE_PORT,
+            "DATABASE_NAME": self.DATABASE_NAME,
+            "DATABASE_USERNAME": self.DATABASE_USERNAME,
+            "DATABASE_PASSWORD": self.DATABASE_PASSWORD,
+        }
+
+        missing = [name for name, value in required_fields.items() if not value]
+        if missing:
+            raise ValueError(
+                f"Missing required environment variable(s): {', '.join(missing)}. "
+                "Please set them in your .env file or environment."
+            )
 
     @property
     def DATABASE_URL(self) -> str:
@@ -31,4 +50,7 @@ class Settings:
         )
 
 
-settings = Settings()
+try:
+    settings = Settings()
+except ValueError as e:
+    raise SystemExit(f"Configuration error: {e}") from e

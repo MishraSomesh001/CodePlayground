@@ -11,10 +11,19 @@ load_dotenv(dotenv_path=env_path)
 class Settings:
     def __init__(self) -> None:
         self.DATABASE_HOSTNAME = os.getenv("DATABASE_HOSTNAME", "localhost")
-        self.DATABASE_PORT = os.getenv("DATABASE_PORT","")
-        self.DATABASE_NAME = os.getenv("DATABASE_NAME","")
-        self.DATABASE_USERNAME = os.getenv("DATABASE_USERNAME","")
+        self.DATABASE_PORT = os.getenv("DATABASE_PORT", "")
+        self.DATABASE_NAME = os.getenv("DATABASE_NAME", "")
+        self.DATABASE_USERNAME = os.getenv("DATABASE_USERNAME", "")
         self.DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "")
+
+        # Auth / CORS
+        self.CORS_ORIGINS: list[str] = [
+            origin.strip()
+            for origin in os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+            if origin.strip()
+        ]
+        self.GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+        self.GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
 
         self._validate()
 
